@@ -1,0 +1,375 @@
+<div class="visor">
+
+  @if (error) {
+    <div class="mensaje-error global">
+      {{ error }}
+    </div>
+  }
+
+  <main class="contenido">
+
+    <aside class="controles">
+
+      <section>
+        <span class="numero">1</span>
+        <h2>Selecciona el periodo</h2>
+
+        <label for="periodo">
+          Mes del pronóstico
+        </label>
+
+        <select
+          id="periodo"
+          name="periodo"
+          [(ngModel)]="periodoSeleccionado"
+          (ngModelChange)="alCambiarPeriodo()"
+          [disabled]="cargandoCapas || periodos.length === 0"
+        >
+          @if (periodos.length === 0) {
+            <option value="">
+              Sin periodos disponibles
+            </option>
+          }
+
+          @for (
+            periodo of periodos;
+            track periodo
+          ) {
+            <option [value]="periodo">
+              {{ periodo | date:'MMMM yyyy':'UTC':'es-MX' }}
+            </option>
+          }
+        </select>
+      </section>
+
+      <section>
+        <span class="numero">2</span>
+        <h2>Selecciona la variable</h2>
+
+        <label class="opcion">
+          <input
+            type="radio"
+            name="variable"
+            value="lluvia"
+            [(ngModel)]="variableSeleccionada"
+            (ngModelChange)="alCambiarVariable()"
+            [disabled]="cargandoCapas"
+          >
+
+          <span>
+            <b>Precipitación</b>
+            <small>
+              Acumulado mensual en milímetros
+            </small>
+          </span>
+        </label>
+
+        <label class="opcion">
+          <input
+            type="radio"
+            name="variable"
+            value="tmax"
+            [(ngModel)]="variableSeleccionada"
+            (ngModelChange)="alCambiarVariable()"
+            [disabled]="cargandoCapas"
+          >
+
+          <span>
+            <b>Temperatura máxima</b>
+            <small>
+              Promedio mensual en °C
+            </small>
+          </span>
+        </label>
+
+        <label class="opcion">
+          <input
+            type="radio"
+            name="variable"
+            value="tmin"
+            [(ngModel)]="variableSeleccionada"
+            (ngModelChange)="alCambiarVariable()"
+            [disabled]="cargandoCapas"
+          >
+
+          <span>
+            <b>Temperatura mínima</b>
+            <small>
+              Promedio mensual en °C
+            </small>
+          </span>
+        </label>
+      </section>
+
+    
+      @if (capaActual) {
+        <section class="detalle-capa">
+          <small>Capa mostrada</small>
+
+          <b>
+            {{ nombreVariable(capaActual.variable) }}
+          </b>
+
+          <span>
+            {{ capaActual.mes }} {{ capaActual.anio }}
+          </span>
+
+          <span>
+            Unidad: {{ capaActual.unidad }}
+          </span>
+        </section>
+      }
+
+      <div class="instruccion">
+        Selecciona un periodo y una variable.
+        Después haz clic en el mapa inferior para
+        consultar el pronóstico de ese punto.
+      </div>
+
+    </aside>
+
+    <section class="zona-central">
+
+      <article class="imagen-card">
+  <div class="titulo-seccion">
+    <div>
+      <span class="numero">3</span>
+      <h2>Mapa del pronóstico seleccionado</h2>
+    </div>
+
+    @if (capaActual) {
+      <span class="etiqueta-variable">
+        {{ nombreVariable(capaActual.variable) }}
+        · {{ capaActual.mes }} {{ capaActual.anio }}
+      </span>
+    }
+  </div>
+
+  @if (cargandoCapas) {
+    <div class="imagen-vacia">
+      Cargando catálogo del pronóstico…
+    </div>
+  } @else if (urlImagenActual) {
+    <div class="imagen-pronostico-wrap">
+      <img
+        class="imagen-pronostico"
+        [src]="urlImagenActual"
+        [alt]="
+          nombreVariable(variableSeleccionada) +
+          ' del periodo ' + periodoSeleccionado
+        "
+        (error)="error = 'No se pudo cargar la imagen: ' + urlImagenActual"
+      >
+    </div>
+  } @else {
+    <div class="imagen-vacia">
+      No hay una imagen disponible para esta selección.
+    </div>
+  }
+</article>
+
+      <article class="mapa-card">
+
+        <div class="titulo-seccion">
+          <div>
+            <span class="numero">4</span>
+            <h2>Selecciona un punto</h2>
+          </div>
+
+          <small>
+            Haz clic dentro del mapa para consultar
+          </small>
+        </div>
+
+        <div class="mapa-pequeno">
+
+  <div id="mapa-pronostico"></div>
+
+  @if (cargandoMapa) {
+    <div class="estado-mapa">
+      Cargando mapa…
+    </div>
+  }
+
+</div>
+
+      </article>
+
+    </section>
+
+    <aside class="resultados">
+
+      <div class="titulo-resultados">
+        <span class="numero">5</span>
+
+        <div>
+          <h2>Pronóstico del punto</h2>
+
+          <p>
+            Resultados para la ubicación seleccionada
+          </p>
+        </div>
+      </div>
+
+      @if (consultandoPunto) {
+
+        <div class="sin-seleccion">
+          Consultando datos…
+        </div>
+
+      } @else if (punto) {
+
+        <div class="coordenadas">
+
+          <span>
+            <small>Latitud</small>
+            <b>
+              {{ latSeleccionada | number:'1.5-5' }}
+            </b>
+          </span>
+
+          <span>
+            <small>Longitud</small>
+            <b>
+              {{ lonSeleccionada | number:'1.5-5' }}
+            </b>
+          </span>
+
+        </div>
+
+        <div class="uso-suelo">
+
+          <small>
+            Uso de suelo y vegetación INEGI
+          </small>
+
+          <strong>
+            {{
+              punto.uso_suelo?.descripcion ||
+              'Sin clasificación'
+            }}
+          </strong>
+
+          @if (punto.uso_suelo?.clave) {
+            <span>
+              Clave: {{ punto.uso_suelo?.clave }}
+            </span>
+          }
+
+        </div>
+
+        <div class="tabla-contenedor">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Periodo</th>
+                <th>Lluvia</th>
+                <th>Máx.</th>
+                <th>Mín.</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                fila of punto.pronostico;
+                track fila.periodo
+              ) {
+                <tr>
+
+                  <td>
+                    {{
+                      fila.periodo
+                      | date:'MMM yyyy':'UTC':'es-MX'
+                    }}
+                  </td>
+
+                  <td>
+                    @if (
+                      valorPronostico(
+                        fila,
+                        'lluvia'
+                      ) !== null
+                    ) {
+                      {{
+                        valorPronostico(
+                          fila,
+                          'lluvia'
+                        ) | number:'1.1-1'
+                      }}
+                      mm
+                    } @else {
+                      —
+                    }
+                  </td>
+
+                  <td>
+                    @if (
+                      valorPronostico(
+                        fila,
+                        'tmax'
+                      ) !== null
+                    ) {
+                      {{
+                        valorPronostico(
+                          fila,
+                          'tmax'
+                        ) | number:'1.1-1'
+                      }}
+                      °C
+                    } @else {
+                      —
+                    }
+                  </td>
+
+                  <td>
+                    @if (
+                      valorPronostico(
+                        fila,
+                        'tmin'
+                      ) !== null
+                    ) {
+                      {{
+                        valorPronostico(
+                          fila,
+                          'tmin'
+                        ) | number:'1.1-1'
+                      }}
+                      °C
+                    } @else {
+                      —
+                    }
+                  </td>
+
+                </tr>
+              }
+            </tbody>
+          </table>
+
+        </div>
+
+        <p class="nota">
+          El pronóstico representa condiciones mensuales
+          esperadas y no sustituye las observaciones de campo.
+        </p>
+
+      } @else {
+
+        <div class="sin-seleccion">
+          <span>⌖</span>
+
+          <b>Selecciona un punto</b>
+
+          <p>
+            Haz clic sobre el mapa pequeño para
+            mostrar el pronóstico.
+          </p>
+        </div>
+
+      }
+
+    </aside>
+
+  </main>
+
+</div>
