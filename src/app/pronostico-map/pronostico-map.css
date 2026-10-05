@@ -455,3 +455,57 @@ td {
     min-height: 280px;
   }
 }
+
+/* El mapa ocupa el espacio restante hasta el final del panel derecho. */
+.contenido {
+  align-items: stretch;
+}
+
+.zona-central {
+  align-self: stretch;
+}
+
+.imagen-card {
+  flex: 0 0 auto;
+}
+
+.mapa-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
+.mapa-card .titulo-seccion {
+  flex: 0 0 auto;
+}
+
+.mapa-pequeno {
+  flex: 1 0 auto;
+  height: auto;
+  min-height: 480px;
+}
+
+#mapa-pronostico {
+  height: 100%;
+  min-height: 0;
+}
+
+/* En pantallas pequeñas, conserva una altura manejable. */
+@media (max-width: 1100px) {
+  .mapa-card {
+    flex: 0 0 auto;
+  }
+
+  .mapa-pequeno {
+    flex: none;
+    height: 420px;
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 760px) {
+  .mapa-pequeno {
+    height: 350px;
+    min-height: 350px;
+  }
+}

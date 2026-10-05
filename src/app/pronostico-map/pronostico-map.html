@@ -1,22 +1,17 @@
 <div class="visor">
-
   @if (error) {
-    <div class="mensaje-error global">
+    <div class="mensaje-error global" role="alert">
       {{ error }}
     </div>
   }
 
   <main class="contenido">
-
     <aside class="controles">
-
       <section>
         <span class="numero">1</span>
         <h2>Selecciona el periodo</h2>
 
-        <label for="periodo">
-          Mes del pronóstico
-        </label>
+        <label for="periodo">Mes del pronóstico</label>
 
         <select
           id="periodo"
@@ -27,14 +22,11 @@
         >
           @if (periodos.length === 0) {
             <option value="">
-              Sin periodos disponibles
+              {{ cargandoCapas ? 'Cargando periodos…' : 'Sin periodos disponibles' }}
             </option>
           }
 
-          @for (
-            periodo of periodos;
-            track periodo
-          ) {
+          @for (periodo of periodos; track periodo) {
             <option [value]="periodo">
               {{ periodo | date:'MMMM yyyy':'UTC':'es-MX' }}
             </option>
@@ -55,12 +47,9 @@
             (ngModelChange)="alCambiarVariable()"
             [disabled]="cargandoCapas"
           >
-
           <span>
             <b>Precipitación</b>
-            <small>
-              Acumulado mensual en milímetros
-            </small>
+            <small>Acumulado mensual en milímetros</small>
           </span>
         </label>
 
@@ -73,12 +62,9 @@
             (ngModelChange)="alCambiarVariable()"
             [disabled]="cargandoCapas"
           >
-
           <span>
             <b>Temperatura máxima</b>
-            <small>
-              Promedio mensual en °C
-            </small>
+            <small>Promedio mensual en °C</small>
           </span>
         </label>
 
@@ -91,285 +77,366 @@
             (ngModelChange)="alCambiarVariable()"
             [disabled]="cargandoCapas"
           >
-
           <span>
             <b>Temperatura mínima</b>
-            <small>
-              Promedio mensual en °C
-            </small>
+            <small>Promedio mensual en °C</small>
           </span>
         </label>
       </section>
 
-    
-      @if (capaActual) {
+      @if (capaActual; as capa) {
         <section class="detalle-capa">
           <small>Capa mostrada</small>
-
-          <b>
-            {{ nombreVariable(capaActual.variable) }}
-          </b>
-
-          <span>
-            {{ capaActual.mes }} {{ capaActual.anio }}
-          </span>
-
-          <span>
-            Unidad: {{ capaActual.unidad }}
-          </span>
+          <b>{{ nombreVariable(capa.variable) }}</b>
+          <span>{{ capa.mes }} {{ capa.anio }}</span>
+          <span>Unidad: {{ capa.unidad }}</span>
         </section>
       }
 
       <div class="instruccion">
-        Selecciona un periodo y una variable.
-        Después haz clic en el mapa inferior para
-        consultar el pronóstico de ese punto.
+        Selecciona un periodo y una variable para ver la imagen.
+        Haz clic en el mapa para consultar el punto y seleccionar
+        automáticamente su estado y municipio.
+        También puedes elegir un estado en el panel derecho.
       </div>
-
     </aside>
 
     <section class="zona-central">
-
       <article class="imagen-card">
-  <div class="titulo-seccion">
-    <div>
-      <span class="numero">3</span>
-      <h2>Mapa del pronóstico seleccionado</h2>
-    </div>
+        <div class="titulo-seccion">
+          <div>
+            <span class="numero">3</span>
+            <h2>Mapa del pronóstico seleccionado</h2>
+          </div>
 
-    @if (capaActual) {
-      <span class="etiqueta-variable">
-        {{ nombreVariable(capaActual.variable) }}
-        · {{ capaActual.mes }} {{ capaActual.anio }}
-      </span>
-    }
-  </div>
+          @if (capaActual; as capa) {
+            <span class="etiqueta-variable">
+              {{ nombreVariable(capa.variable) }}
+              · {{ capa.mes }} {{ capa.anio }}
+            </span>
+          }
+        </div>
 
-  @if (cargandoCapas) {
-    <div class="imagen-vacia">
-      Cargando catálogo del pronóstico…
-    </div>
-  } @else if (urlImagenActual) {
-    <div class="imagen-pronostico-wrap">
-      <img
-        class="imagen-pronostico"
-        [src]="urlImagenActual"
-        [alt]="
-          nombreVariable(variableSeleccionada) +
-          ' del periodo ' + periodoSeleccionado
-        "
-        (error)="error = 'No se pudo cargar la imagen: ' + urlImagenActual"
-      >
-    </div>
-  } @else {
-    <div class="imagen-vacia">
-      No hay una imagen disponible para esta selección.
-    </div>
-  }
-</article>
+        @if (cargandoCapas) {
+          <div class="imagen-vacia">
+            Cargando catálogo del pronóstico…
+          </div>
+        } @else if (urlImagenActual) {
+          <div class="imagen-pronostico-wrap">
+            <img
+              class="imagen-pronostico"
+              [src]="urlImagenActual"
+              [alt]="
+                nombreVariable(variableSeleccionada) +
+                ' del periodo ' + periodoSeleccionado
+              "
+              (error)="error = 'No se pudo cargar la imagen del pronóstico seleccionado.'"
+            >
+          </div>
+        } @else {
+          <div class="imagen-vacia">
+            No hay una imagen disponible para esta selección.
+          </div>
+        }
+      </article>
 
       <article class="mapa-card">
-
         <div class="titulo-seccion">
           <div>
             <span class="numero">4</span>
             <h2>Selecciona un punto</h2>
           </div>
 
-          <small>
-            Haz clic dentro del mapa para consultar
-          </small>
+          <small>Haz clic dentro del mapa para consultar</small>
         </div>
 
         <div class="mapa-pequeno">
+          <!-- El contenedor permanece en el HTML durante la carga. -->
+          <div id="mapa-pronostico"></div>
 
-  <div id="mapa-pronostico"></div>
-
-  @if (cargandoMapa) {
-    <div class="estado-mapa">
-      Cargando mapa…
-    </div>
-  }
-
-</div>
-
+          @if (cargandoMapa) {
+            <div class="estado-mapa">Cargando mapa…</div>
+          }
+        </div>
       </article>
-
     </section>
 
     <aside class="resultados">
-
-      <div class="titulo-resultados">
-        <span class="numero">5</span>
-
-        <div>
-          <h2>Pronóstico del punto</h2>
-
-          <p>
-            Resultados para la ubicación seleccionada
-          </p>
-        </div>
-      </div>
-
-      @if (consultandoPunto) {
-
-        <div class="sin-seleccion">
-          Consultando datos…
+      <section>
+        <div class="titulo-resultados">
+          <span class="numero">5</span>
+          <div>
+            <h2>Pronóstico del punto</h2>
+            <p>Resultados para la ubicación seleccionada</p>
+          </div>
         </div>
 
-      } @else if (punto) {
-
-        <div class="coordenadas">
-
-          <span>
-            <small>Latitud</small>
-            <b>
-              {{ latSeleccionada | number:'1.5-5' }}
-            </b>
-          </span>
-
-          <span>
-            <small>Longitud</small>
-            <b>
-              {{ lonSeleccionada | number:'1.5-5' }}
-            </b>
-          </span>
-
-        </div>
-
-        <div class="uso-suelo">
-
-          <small>
-            Uso de suelo y vegetación INEGI
-          </small>
-
-          <strong>
-            {{
-              punto.uso_suelo?.descripcion ||
-              'Sin clasificación'
-            }}
-          </strong>
-
-          @if (punto.uso_suelo?.clave) {
+        @if (consultandoPunto) {
+          <div class="sin-seleccion" role="status">
+            Consultando datos del punto…
+          </div>
+        } @else if (punto; as datosPunto) {
+          <div class="coordenadas">
             <span>
-              Clave: {{ punto.uso_suelo?.clave }}
+              <small>Latitud</small>
+              <b>{{ latSeleccionada | number:'1.5-5' }}</b>
             </span>
-          }
+            <span>
+              <small>Longitud</small>
+              <b>{{ lonSeleccionada | number:'1.5-5' }}</b>
+            </span>
+          </div>
 
-        </div>
+          <div class="uso-suelo">
+            <small>Uso de suelo y vegetación INEGI</small>
+            <strong>
+              {{ datosPunto.uso_suelo?.descripcion || 'Sin clasificación' }}
+            </strong>
 
-        <div class="tabla-contenedor">
+            @if (datosPunto.uso_suelo?.clave) {
+              <span>Clave: {{ datosPunto.uso_suelo?.clave }}</span>
+            }
+          </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Periodo</th>
-                <th>Lluvia</th>
-                <th>Máx.</th>
-                <th>Mín.</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              @for (
-                fila of punto.pronostico;
-                track fila.periodo
-              ) {
+          <div class="tabla-contenedor">
+            <table>
+              <thead>
                 <tr>
-
-                  <td>
-                    {{
-                      fila.periodo
-                      | date:'MMM yyyy':'UTC':'es-MX'
-                    }}
-                  </td>
-
-                  <td>
-                    @if (
-                      valorPronostico(
-                        fila,
-                        'lluvia'
-                      ) !== null
-                    ) {
-                      {{
-                        valorPronostico(
-                          fila,
-                          'lluvia'
-                        ) | number:'1.1-1'
-                      }}
-                      mm
-                    } @else {
-                      —
-                    }
-                  </td>
-
-                  <td>
-                    @if (
-                      valorPronostico(
-                        fila,
-                        'tmax'
-                      ) !== null
-                    ) {
-                      {{
-                        valorPronostico(
-                          fila,
-                          'tmax'
-                        ) | number:'1.1-1'
-                      }}
-                      °C
-                    } @else {
-                      —
-                    }
-                  </td>
-
-                  <td>
-                    @if (
-                      valorPronostico(
-                        fila,
-                        'tmin'
-                      ) !== null
-                    ) {
-                      {{
-                        valorPronostico(
-                          fila,
-                          'tmin'
-                        ) | number:'1.1-1'
-                      }}
-                      °C
-                    } @else {
-                      —
-                    }
-                  </td>
-
+                  <th scope="col">Periodo</th>
+                  <th scope="col">Lluvia</th>
+                  <th scope="col">Máx.</th>
+                  <th scope="col">Mín.</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
 
-        </div>
+              <tbody>
+                @for (fila of datosPunto.pronostico; track fila.periodo) {
+                  <tr>
+                    <td>
+                      {{ fila.periodo | date:'MMM yyyy':'UTC':'es-MX' }}
+                    </td>
+                    <td>
+                      @if (valorPronostico(fila, 'lluvia') !== null) {
+                        {{ valorPronostico(fila, 'lluvia') | number:'1.1-1' }} mm
+                      } @else {
+                        —
+                      }
+                    </td>
+                    <td>
+                      @if (valorPronostico(fila, 'tmax') !== null) {
+                        {{ valorPronostico(fila, 'tmax') | number:'1.1-1' }} °C
+                      } @else {
+                        —
+                      }
+                    </td>
+                    <td>
+                      @if (valorPronostico(fila, 'tmin') !== null) {
+                        {{ valorPronostico(fila, 'tmin') | number:'1.1-1' }} °C
+                      } @else {
+                        —
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4">Sin pronóstico disponible para el punto.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
 
-        <p class="nota">
-          El pronóstico representa condiciones mensuales
-          esperadas y no sustituye las observaciones de campo.
-        </p>
-
-      } @else {
-
-        <div class="sin-seleccion">
-          <span>⌖</span>
-
-          <b>Selecciona un punto</b>
-
-          <p>
-            Haz clic sobre el mapa pequeño para
-            mostrar el pronóstico.
+          <p class="nota">
+            Los valores del punto corresponden a la celda del pronóstico.
+            No representan una medición directa de la parcela.
           </p>
+        } @else {
+          <div class="sin-seleccion">
+            <span>⌖</span>
+            <b>Selecciona un punto</b>
+            <p>
+              Haz clic sobre el mapa pequeño para mostrar el pronóstico.
+            </p>
+          </div>
+        }
+      </section>
+
+      <section
+        class="consulta-municipal"
+        style="margin-top: 24px; padding-top: 20px; border-top: 2px solid #dfe8eb;"
+      >
+        <div class="titulo-resultados">
+          <span class="numero">6</span>
+          <div>
+            <h2>Pronóstico por municipio</h2>
+            <p>Promedios del mes seleccionado sobre la superficie municipal</p>
+          </div>
         </div>
 
-      }
+        <label
+          for="estado"
+          style="display: block; margin: 16px 0 8px; font-size: 13px; font-weight: 700;"
+        >
+          Selecciona un estado
+        </label>
 
+        <select
+          id="estado"
+          name="estado"
+          [(ngModel)]="estadoSeleccionado"
+          (ngModelChange)="alCambiarEstado()"
+          [disabled]="cargandoEstados || estados.length === 0"
+          style="width: 100%; height: 42px; padding: 0 10px; border: 1px solid #cad9df; border-radius: 7px; color: #123b4a; background: white;"
+        >
+          <option value="">
+            {{ cargandoEstados ? 'Cargando estados…' : 'Selecciona un estado' }}
+          </option>
+
+          @for (estado of estados; track estado.cve_ent) {
+            <option [value]="estado.cve_ent">
+              {{ estado.nombre }}
+            </option>
+          }
+        </select>
+
+        @if (errorEstados) {
+          <div class="mensaje-error" role="alert">
+            {{ errorEstados }}
+          </div>
+        }
+
+        @if (periodoSeleccionado) {
+          <p style="font-size: 13px;">
+            <b>Mes consultado:</b>
+            {{ periodoSeleccionado | date:'MMMM yyyy':'UTC':'es-MX' }}
+          </p>
+        }
+
+        @if (consultandoMunicipio) {
+          <p class="nota" role="status">
+            Identificando el estado y municipio del punto…
+          </p>
+        }
+
+        @if (municipioSeleccionado; as seleccionado) {
+          <div class="uso-suelo" style="background: #fff4ce; border-left-color: #e6a700;">
+            <small>Municipio del punto seleccionado</small>
+            <strong>
+              {{ seleccionado.municipio }}, {{ seleccionado.estado }}
+            </strong>
+            <span>Clave municipal: {{ seleccionado.cvegeo }}</span>
+            <span>Su fila aparece resaltada en la tabla.</span>
+          </div>
+        }
+
+        @if (avisoMunicipio) {
+          <p class="nota" role="status">{{ avisoMunicipio }}</p>
+        }
+
+        @if (cargandoMunicipios) {
+          <div class="sin-seleccion" role="status">
+            Consultando promedios municipales…
+          </div>
+        } @else if (errorMunicipios) {
+          <div class="mensaje-error" role="alert">
+            {{ errorMunicipios }}
+          </div>
+
+          <button type="button" (click)="cargarMunicipios()">
+            Reintentar consulta
+          </button>
+        } @else if (respuestaMunicipios; as datosMunicipales) {
+          <p style="font-size: 13px;">
+            <b>{{ nombreEstadoSeleccionado }}</b>
+            · {{ datosMunicipales.total_municipios }} municipios
+          </p>
+
+          <div
+            class="tabla-contenedor tabla-municipal"
+            tabindex="0"
+            aria-label="Promedios municipales del estado seleccionado"
+            style="max-height: 480px; overflow: auto;"
+          >
+            <table>
+              <thead style="position: sticky; top: 0; z-index: 1;">
+                <tr>
+                  <th scope="col">Municipio</th>
+                  <th scope="col">Lluvia<br>mm</th>
+                  <th scope="col">Máx.<br>°C</th>
+                  <th scope="col">Mín.<br>°C</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (fila of municipios; track fila.cvegeo) {
+                  <tr
+                    [class.municipio-seleccionado]="esMunicipioSeleccionado(fila)"
+                    [style.background-color]="
+                      esMunicipioSeleccionado(fila) ? '#fff1b8' : null
+                    "
+                    [style.font-weight]="
+                      esMunicipioSeleccionado(fila) ? '700' : null
+                    "
+                    [attr.aria-current]="
+                      esMunicipioSeleccionado(fila) ? 'true' : null
+                    "
+                  >
+                    <td style="white-space: normal; min-width: 110px;">
+                      @if (esMunicipioSeleccionado(fila)) {
+                        <span aria-label="Municipio del punto seleccionado">📍</span>
+                      }
+                      {{ fila.municipio }}
+                    </td>
+
+                    <td>
+                      @if (fila.lluvia !== null) {
+                        {{ fila.lluvia | number:'1.1-1' }}
+                      } @else {
+                        <span [title]="fila.estado_datos.lluvia">—</span>
+                      }
+                    </td>
+
+                    <td>
+                      @if (fila.tmax !== null) {
+                        {{ fila.tmax | number:'1.1-1' }}
+                      } @else {
+                        <span [title]="fila.estado_datos.tmax">—</span>
+                      }
+                    </td>
+
+                    <td>
+                      @if (fila.tmin !== null) {
+                        {{ fila.tmin | number:'1.1-1' }}
+                      } @else {
+                        <span [title]="fila.estado_datos.tmin">—</span>
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4">Sin municipios disponibles.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <p class="nota">
+            Promedios espaciales ponderados por superficie.
+            Se muestran todos los municipios del estado.
+            El símbolo — indica un valor no disponible.
+            División municipal INEGI, edición 2022.
+          </p>
+        } @else if (!consultandoMunicipio) {
+          <div class="sin-seleccion">
+            <b>Consulta los municipios de un estado</b>
+            <p>
+              Selecciona un estado en el menú o haz clic en el mapa.
+              La tabla mostrará las tres variables para el mes elegido.
+            </p>
+          </div>
+        }
+      </section>
     </aside>
-
   </main>
-
 </div>
