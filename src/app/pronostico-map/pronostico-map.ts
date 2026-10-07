@@ -648,4 +648,57 @@ this.mostrarMunicipioEnTabla();
 
     return null;
   }
+  descargarMunicipiosCSV(): void {
+  if (!this.municipios.length) {
+    return;
+  }
+
+  const escaparCSV = (valor: unknown): string => {
+    const texto = valor === null || valor === undefined ? '' : String(valor);
+    return `"${texto.replace(/"/g, '""')}"`;
+  };
+
+  const encabezados = [
+    'Municipio',
+    'Lluvia (mm)',
+    'Temperatura máxima (°C)',
+    'Temperatura mínima (°C)'
+  ];
+
+  const filas = this.municipios.map(municipio => [
+    municipio.municipio,
+    municipio.lluvia ?? '',
+    municipio.tmax ?? '',
+    municipio.tmin ?? ''
+  ]);
+
+  const csv = [
+    encabezados.map(escaparCSV).join(','),
+    ...filas.map(fila => fila.map(escaparCSV).join(','))
+  ].join('\r\n');
+
+  // BOM UTF-8 para que Excel reconozca correctamente acentos y ñ.
+  const blob = new Blob(['\uFEFF' + csv], {
+    type: 'text/csv;charset=utf-8;'
+  });
+
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement('a');
+
+  const estado = this.nombreEstadoSeleccionado
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '_');
+
+  const periodo = this.periodoSeleccionado.slice(0, 7);
+
+  enlace.href = url;
+  enlace.download = `pronostico_municipios_${estado}_${periodo}.csv`;
+
+  document.body.appendChild(enlace);
+  enlace.click();
+  document.body.removeChild(enlace);
+
+  URL.revokeObjectURL(url);
+}
 }

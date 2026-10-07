@@ -346,10 +346,29 @@
             Reintentar consulta
           </button>
         } @else if (respuestaMunicipios; as datosMunicipales) {
-          <p style="font-size: 13px;">
-            <b>{{ nombreEstadoSeleccionado }}</b>
-            · {{ datosMunicipales.total_municipios }} municipios
-          </p>
+          <div
+  style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  "
+>
+  <p style="font-size: 13px; margin: 0;">
+    <b>{{ nombreEstadoSeleccionado }}</b>
+    · {{ datosMunicipales.total_municipios }} municipios
+  </p>
+
+  <button
+    type="button"
+    (click)="descargarMunicipiosCSV()"
+    [disabled]="municipios.length === 0"
+    title="Descargar tabla de municipios en CSV"
+  >
+    Descargar CSV
+  </button>
+</div>
 
           <div
             class="tabla-contenedor tabla-municipal"
