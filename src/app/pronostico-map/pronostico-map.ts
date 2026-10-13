@@ -29,6 +29,8 @@ import {
   templateUrl: './pronostico-map.html',
   styleUrl: './pronostico-map.css'
 })
+
+
 export class PronosticoMap implements AfterViewInit, OnDestroy {
   private mapa?: L.Map;
   private marcador?: L.CircleMarker;
@@ -45,7 +47,7 @@ export class PronosticoMap implements AfterViewInit, OnDestroy {
   private versionPunto = 0;
   private versionUbicacion = 0;
   private versionMunicipios = 0;
-
+  mostrarInformacion = false;
   capas: CapaPronostico[] = [];
   periodos: string[] = [];
   estados: EstadoPronostico[] = [];

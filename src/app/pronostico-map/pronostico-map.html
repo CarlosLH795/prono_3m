@@ -1,461 +1,905 @@
 <div class="visor">
+
   @if (error) {
+
     <div class="mensaje-error global" role="alert">
+
       {{ error }}
+
     </div>
+
   }
 
   <main class="contenido">
+
     <aside class="controles">
+
       <section>
+
         <span class="numero">1</span>
+
         <h2>Selecciona el periodo</h2>
 
         <label for="periodo">Mes del pronóstico</label>
 
         <select
+
           id="periodo"
+
           name="periodo"
+
           [(ngModel)]="periodoSeleccionado"
+
           (ngModelChange)="alCambiarPeriodo()"
+
           [disabled]="cargandoCapas || periodos.length === 0"
+
         >
+
           @if (periodos.length === 0) {
+
             <option value="">
+
               {{ cargandoCapas ? 'Cargando periodos…' : 'Sin periodos disponibles' }}
+
             </option>
+
           }
 
           @for (periodo of periodos; track periodo) {
+
             <option [value]="periodo">
+
               {{ periodo | date:'MMMM yyyy':'UTC':'es-MX' }}
+
             </option>
+
           }
+
         </select>
+
       </section>
 
       <section>
+
         <span class="numero">2</span>
+
         <h2>Selecciona la variable</h2>
 
         <label class="opcion">
+
           <input
+
             type="radio"
+
             name="variable"
+
             value="lluvia"
+
             [(ngModel)]="variableSeleccionada"
+
             (ngModelChange)="alCambiarVariable()"
+
             [disabled]="cargandoCapas"
+
           >
+
           <span>
+
             <b>Precipitación</b>
+
             <small>Acumulado mensual en milímetros</small>
+
           </span>
+
         </label>
 
         <label class="opcion">
+
           <input
+
             type="radio"
+
             name="variable"
+
             value="tmax"
+
             [(ngModel)]="variableSeleccionada"
+
             (ngModelChange)="alCambiarVariable()"
+
             [disabled]="cargandoCapas"
+
           >
+
           <span>
+
             <b>Temperatura máxima</b>
+
             <small>Promedio mensual en °C</small>
+
           </span>
+
         </label>
 
         <label class="opcion">
+
           <input
+
             type="radio"
+
             name="variable"
+
             value="tmin"
+
             [(ngModel)]="variableSeleccionada"
+
             (ngModelChange)="alCambiarVariable()"
+
             [disabled]="cargandoCapas"
+
           >
+
           <span>
+
             <b>Temperatura mínima</b>
+
             <small>Promedio mensual en °C</small>
+
           </span>
+
         </label>
+
       </section>
 
       @if (capaActual; as capa) {
+
         <section class="detalle-capa">
+
           <small>Capa mostrada</small>
+
           <b>{{ nombreVariable(capa.variable) }}</b>
+
           <span>{{ capa.mes }} {{ capa.anio }}</span>
+
           <span>Unidad: {{ capa.unidad }}</span>
+
         </section>
+
       }
 
       <div class="instruccion">
+
         Selecciona un periodo y una variable para ver la imagen.
+
         Haz clic en el mapa para consultar el punto y seleccionar
+
         automáticamente su estado y municipio.
+
         También puedes elegir un estado en el panel derecho.
+
       </div>
+
     </aside>
 
     <section class="zona-central">
+
       <article class="imagen-card">
+
         <div class="titulo-seccion">
+
           <div>
+
             <span class="numero">3</span>
+
             <h2>Mapa del pronóstico seleccionado</h2>
+
           </div>
 
           @if (capaActual; as capa) {
-            <span class="etiqueta-variable">
-              {{ nombreVariable(capa.variable) }}
-              · {{ capa.mes }} {{ capa.anio }}
-            </span>
+            <div class="acciones-informacion">
+              <span class="etiqueta-variable">
+                {{ nombreVariable(capa.variable) }} · {{ capa.mes }} {{ capa.anio }}
+              </span>
+              <button type="button" class="boton-informacion"
+                (click)="mostrarInformacion = true"
+                title="Ver interpretación agroclimática"
+                aria-label="Ver interpretación agroclimática">ⓘ</button>
+            </div>
           }
+
         </div>
 
         @if (cargandoCapas) {
+
           <div class="imagen-vacia">
+
             Cargando catálogo del pronóstico…
+
           </div>
+
         } @else if (urlImagenActual) {
+
           <div class="imagen-pronostico-wrap">
+
             <img
+
               class="imagen-pronostico"
+
               [src]="urlImagenActual"
+
               [alt]="
+
                 nombreVariable(variableSeleccionada) +
+
                 ' del periodo ' + periodoSeleccionado
+
               "
+
               (error)="error = 'No se pudo cargar la imagen del pronóstico seleccionado.'"
+
             >
+
           </div>
+
         } @else {
+
           <div class="imagen-vacia">
+
             No hay una imagen disponible para esta selección.
+
           </div>
+
         }
+
       </article>
 
       <article class="mapa-card">
+
         <div class="titulo-seccion">
+
           <div>
+
             <span class="numero">4</span>
+
             <h2>Selecciona un punto</h2>
+
           </div>
 
           <small>Haz clic dentro del mapa para consultar</small>
+
         </div>
 
         <div class="mapa-pequeno">
+
           <!-- El contenedor permanece en el HTML durante la carga. -->
+
           <div id="mapa-pronostico"></div>
 
           @if (cargandoMapa) {
+
             <div class="estado-mapa">Cargando mapa…</div>
+
           }
+
         </div>
+
       </article>
+
     </section>
 
     <aside class="resultados">
+
       <section>
+
         <div class="titulo-resultados">
+
           <span class="numero">5</span>
+
           <div>
+
             <h2>Pronóstico del punto</h2>
+
             <p>Resultados para la ubicación seleccionada</p>
+
           </div>
+
         </div>
 
         @if (consultandoPunto) {
+
           <div class="sin-seleccion" role="status">
+
             Consultando datos del punto…
+
           </div>
+
         } @else if (punto; as datosPunto) {
+
           <div class="coordenadas">
+
             <span>
+
               <small>Latitud</small>
+
               <b>{{ latSeleccionada | number:'1.5-5' }}</b>
+
             </span>
+
             <span>
+
               <small>Longitud</small>
+
               <b>{{ lonSeleccionada | number:'1.5-5' }}</b>
+
             </span>
+
           </div>
 
           <div class="uso-suelo">
+
             <small>Uso de suelo y vegetación INEGI</small>
+
             <strong>
+
               {{ datosPunto.uso_suelo?.descripcion || 'Sin clasificación' }}
+
             </strong>
 
             @if (datosPunto.uso_suelo?.clave) {
+
               <span>Clave: {{ datosPunto.uso_suelo?.clave }}</span>
+
             }
+
           </div>
 
           <div class="tabla-contenedor">
+
             <table>
+
               <thead>
+
                 <tr>
+
                   <th scope="col">Periodo</th>
+
                   <th scope="col">Lluvia</th>
+
                   <th scope="col">Máx.</th>
+
                   <th scope="col">Mín.</th>
+
                 </tr>
+
               </thead>
 
               <tbody>
+
                 @for (fila of datosPunto.pronostico; track fila.periodo) {
+
                   <tr>
+
                     <td>
+
                       {{ fila.periodo | date:'MMM yyyy':'UTC':'es-MX' }}
+
                     </td>
+
                     <td>
+
                       @if (valorPronostico(fila, 'lluvia') !== null) {
+
                         {{ valorPronostico(fila, 'lluvia') | number:'1.1-1' }} mm
+
                       } @else {
+
                         —
+
                       }
+
                     </td>
+
                     <td>
+
                       @if (valorPronostico(fila, 'tmax') !== null) {
+
                         {{ valorPronostico(fila, 'tmax') | number:'1.1-1' }} °C
+
                       } @else {
+
                         —
+
                       }
+
                     </td>
+
                     <td>
+
                       @if (valorPronostico(fila, 'tmin') !== null) {
+
                         {{ valorPronostico(fila, 'tmin') | number:'1.1-1' }} °C
+
                       } @else {
+
                         —
+
                       }
+
                     </td>
+
                   </tr>
+
                 } @empty {
+
                   <tr>
+
                     <td colspan="4">Sin pronóstico disponible para el punto.</td>
+
                   </tr>
+
                 }
+
               </tbody>
+
             </table>
+
           </div>
 
           <p class="nota">
+
             Los valores del punto corresponden a la celda del pronóstico.
+
             No representan una medición directa de la parcela.
+
           </p>
+
         } @else {
+
           <div class="sin-seleccion">
+
             <span>⌖</span>
+
             <b>Selecciona un punto</b>
+
             <p>
+
               Haz clic sobre el mapa pequeño para mostrar el pronóstico.
+
             </p>
+
           </div>
+
         }
+
       </section>
 
       <section
+
         class="consulta-municipal"
+
         style="margin-top: 24px; padding-top: 20px; border-top: 2px solid #dfe8eb;"
+
       >
+
         <div class="titulo-resultados">
+
           <span class="numero">6</span>
+
           <div>
+
             <h2>Pronóstico por municipio</h2>
+
             <p>Promedios del mes seleccionado sobre la superficie municipal</p>
+
           </div>
+
         </div>
 
         <label
+
           for="estado"
+
           style="display: block; margin: 16px 0 8px; font-size: 13px; font-weight: 700;"
+
         >
+
           Selecciona un estado
+
         </label>
 
         <select
+
           id="estado"
+
           name="estado"
+
           [(ngModel)]="estadoSeleccionado"
+
           (ngModelChange)="alCambiarEstado()"
+
           [disabled]="cargandoEstados || estados.length === 0"
+
           style="width: 100%; height: 42px; padding: 0 10px; border: 1px solid #cad9df; border-radius: 7px; color: #123b4a; background: white;"
+
         >
+
           <option value="">
+
             {{ cargandoEstados ? 'Cargando estados…' : 'Selecciona un estado' }}
+
           </option>
 
           @for (estado of estados; track estado.cve_ent) {
+
             <option [value]="estado.cve_ent">
+
               {{ estado.nombre }}
+
             </option>
+
           }
+
         </select>
 
         @if (errorEstados) {
+
           <div class="mensaje-error" role="alert">
+
             {{ errorEstados }}
+
           </div>
+
         }
 
         @if (periodoSeleccionado) {
+
           <p style="font-size: 13px;">
+
             <b>Mes consultado:</b>
+
             {{ periodoSeleccionado | date:'MMMM yyyy':'UTC':'es-MX' }}
+
           </p>
+
         }
 
         @if (consultandoMunicipio) {
+
           <p class="nota" role="status">
+
             Identificando el estado y municipio del punto…
+
           </p>
+
         }
 
         @if (municipioSeleccionado; as seleccionado) {
+
           <div class="uso-suelo" style="background: #fff4ce; border-left-color: #e6a700;">
+
             <small>Municipio del punto seleccionado</small>
+
             <strong>
+
               {{ seleccionado.municipio }}, {{ seleccionado.estado }}
+
             </strong>
+
             <span>Clave municipal: {{ seleccionado.cvegeo }}</span>
+
             <span>Su fila aparece resaltada en la tabla.</span>
+
           </div>
+
         }
 
         @if (avisoMunicipio) {
+
           <p class="nota" role="status">{{ avisoMunicipio }}</p>
+
         }
 
         @if (cargandoMunicipios) {
+
           <div class="sin-seleccion" role="status">
+
             Consultando promedios municipales…
+
           </div>
+
         } @else if (errorMunicipios) {
+
           <div class="mensaje-error" role="alert">
+
             {{ errorMunicipios }}
+
           </div>
 
           <button type="button" (click)="cargarMunicipios()">
+
             Reintentar consulta
+
           </button>
+
         } @else if (respuestaMunicipios; as datosMunicipales) {
+
           <div
+
   style="
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     gap: 10px;
+
     margin-bottom: 10px;
+
   "
+
 >
+
   <p style="font-size: 13px; margin: 0;">
+
     <b>{{ nombreEstadoSeleccionado }}</b>
+
     · {{ datosMunicipales.total_municipios }} municipios
+
   </p>
 
   <button
+
     type="button"
+
     (click)="descargarMunicipiosCSV()"
+
     [disabled]="municipios.length === 0"
+
     title="Descargar tabla de municipios en CSV"
+
   >
+
     Descargar CSV
+
   </button>
+
 </div>
 
           <div
+
             class="tabla-contenedor tabla-municipal"
+
             tabindex="0"
+
             aria-label="Promedios municipales del estado seleccionado"
+
             style="max-height: 480px; overflow: auto;"
+
           >
+
             <table>
+
               <thead style="position: sticky; top: 0; z-index: 1;">
+
                 <tr>
+
                   <th scope="col">Municipio</th>
+
                   <th scope="col">Lluvia<br>mm</th>
+
                   <th scope="col">Máx.<br>°C</th>
+
                   <th scope="col">Mín.<br>°C</th>
+
                 </tr>
+
               </thead>
 
               <tbody>
+
                 @for (fila of municipios; track fila.cvegeo) {
+
                   <tr
+
                     [class.municipio-seleccionado]="esMunicipioSeleccionado(fila)"
+
                     [style.background-color]="
+
                       esMunicipioSeleccionado(fila) ? '#fff1b8' : null
+
                     "
+
                     [style.font-weight]="
+
                       esMunicipioSeleccionado(fila) ? '700' : null
+
                     "
+
                     [attr.aria-current]="
+
                       esMunicipioSeleccionado(fila) ? 'true' : null
+
                     "
+
                   >
+
                     <td style="white-space: normal; min-width: 110px;">
+
                       @if (esMunicipioSeleccionado(fila)) {
+
                         <span aria-label="Municipio del punto seleccionado">📍</span>
+
                       }
+
                       {{ fila.municipio }}
+
                     </td>
 
                     <td>
+
                       @if (fila.lluvia !== null) {
+
                         {{ fila.lluvia | number:'1.1-1' }}
+
                       } @else {
+
                         <span [title]="fila.estado_datos.lluvia">—</span>
+
                       }
+
                     </td>
 
                     <td>
+
                       @if (fila.tmax !== null) {
+
                         {{ fila.tmax | number:'1.1-1' }}
+
                       } @else {
+
                         <span [title]="fila.estado_datos.tmax">—</span>
+
                       }
+
                     </td>
 
                     <td>
+
                       @if (fila.tmin !== null) {
+
                         {{ fila.tmin | number:'1.1-1' }}
+
                       } @else {
+
                         <span [title]="fila.estado_datos.tmin">—</span>
+
                       }
+
                     </td>
+
                   </tr>
+
                 } @empty {
+
                   <tr>
+
                     <td colspan="4">Sin municipios disponibles.</td>
+
                   </tr>
+
                 }
+
               </tbody>
+
             </table>
+
           </div>
 
           <p class="nota">
+
             Promedios espaciales ponderados por superficie.
+
             Se muestran todos los municipios del estado.
+
             El símbolo — indica un valor no disponible.
+
             División municipal INEGI, edición 2022.
+
           </p>
+
         } @else if (!consultandoMunicipio) {
+
           <div class="sin-seleccion">
+
             <b>Consulta los municipios de un estado</b>
+
             <p>
+
               Selecciona un estado en el menú o haz clic en el mapa.
+
               La tabla mostrará las tres variables para el mes elegido.
+
             </p>
+
           </div>
+
         }
+
       </section>
+
     </aside>
+
   </main>
+
+
+  @if (mostrarInformacion) {
+    <div class="informacion-fondo" (click)="mostrarInformacion = false">
+      <section class="informacion-ventana" role="dialog" aria-modal="true"
+        aria-labelledby="titulo-informacion" (click)="$event.stopPropagation()">
+        <header class="informacion-encabezado">
+          <div>
+            <h2 id="titulo-informacion">Interpretación agroclimática</h2>
+            <p>{{ nombreVariable(variableSeleccionada) }} · Noviembre 2026 – enero 2027</p>
+          </div>
+          <button type="button" class="informacion-cerrar"
+            (click)="mostrarInformacion = false" aria-label="Cerrar información">×</button>
+        </header>
+        <div class="informacion-contenido">
+          <p class="informacion-nota"><strong>Periodo de referencia:</strong> noviembre de 2026 a enero de 2027. Este análisis no corresponde a octubre de 2026. Los escenarios son interpretaciones del pronóstico, no certezas de ocurrencia.</p>
+          @if (variableSeleccionada === 'lluvia') {
+            <h3>Perspectiva de precipitación</h3>
+            <p>El trimestre noviembre-diciembre-enero coincide con la transición hacia el invierno boreal. Desde una perspectiva técnico-climática, deben vigilarse tres factores:</p>
+            <ol>
+              <li><strong>Evolución del ENOS (El Niño-Oscilación del Sur).</strong> Dar seguimiento a sus actualizaciones y posibles efectos regionales.</li>
+              <li><strong>Sistemas frontales (frentes fríos).</strong> Las masas de aire polar pueden elevar el riesgo de heladas en cultivos de otoño-invierno; conviene prever contingencias y gestionar el almacenamiento de agua.</li>
+              <li><strong>Lluvias por “Nortes”.</strong> En el Golfo de México y la Península de Yucatán pueden presentarse lluvias relevantes, con efectos en cosechas y recarga de acuíferos.</li>
+            </ol>
+            <h3>Guía para productores agrícolas, forestales y pecuarios</h3>
+            <ul>
+              <li>En el norte y occidente, la escasez de lluvias invernales puede reducir la calidad del forraje; planificar suplementación del ganado y ajustar la carga animal.</li>
+              <li>En Veracruz, Tabasco y Chiapas, los excesos de humedad pueden favorecer enfermedades fúngicas y bacterianas; mantener drenajes eficientes.</li>
+              <li>En el Altiplano y norte, las condiciones secas y despejadas pueden favorecer heladas radiativas; considerar humedad controlada del suelo y coberturas térmicas.</li>
+              <li>En distritos de riego del norte, Bajío y centro, calendarizar riegos de auxilio conforme a la evapotranspiración del cultivo y consultar el Tablero Digital Edafoclimático.</li>
+              <li>En el centro y norte, la pérdida de humedad de suelos y vegetación puede anticipar condiciones propicias para incendios forestales.</li>
+              <li>Adoptar una gestión preventiva del riesgo climático en lugar de reaccionar solamente después de las afectaciones.</li>
+            </ul>
+            <h3>Estrategia para directivos del INIFAP</h3>
+            <ul>
+              <li>Evaluar escenarios de disponibilidad de agua y almacenamiento en presas de cuencas interiores; cualquier restricción de extracción requiere información hidrológica adicional y autoridad competente.</li>
+              <li>Prever protocolos y apoyos emergentes ante posibles heladas asociadas con frentes fríos y condiciones secas.</li>
+              <li>En Tabasco y Chiapas, valorar limpieza preventiva de cauces, desazolve y mantenimiento de infraestructura hidráulica frente a escenarios de lluvia intensa.</li>
+            </ul>
+          } @else if (variableSeleccionada === 'tmin') {
+            <h3>Análisis de temperatura mínima</h3>
+            <p>Las temperaturas mínimas reflejan la maduración estacional del invierno boreal, con enfriamiento en zonas altas e interiores debido a masas de aire polar y pérdida de radiación nocturna.</p>
+            <ul>
+              <li><strong>Noviembre de 2026 · Transición térmica.</strong> En la Sierra Madre Occidental (Chihuahua y Durango) se proyectan rangos de −3.92 a −0.32 °C; en la Mesa del Centro y el Altiplano, de 5.67 a 10.59 °C. El sur y las costas conservan condiciones cálidas.</li>
+              <li><strong>Diciembre de 2026 · Consolidación del aire frío.</strong> El rango de −6.80 a −3.39 °C se expande sobre Chihuahua, Durango, Sonora y Zacatecas. Valores de 2.47 a 7.76 °C predominan en el Bajío, Altiplano Central y partes altas de Puebla y Estado de México.</li>
+              <li><strong>Enero de 2027 · Pico del invierno.</strong> Los núcleos de −7.44 a −3.88 °C alcanzan mayor extensión en el norte y noroeste; el rango de 2.05 a 7.15 °C se consolida en el interior, con condiciones favorables para heladas.</li>
+            </ul>
+          } @else if (variableSeleccionada === 'tmax') {
+            <h3>Análisis de temperatura máxima</h3>
+            <p>Las temperaturas máximas muestran un contraste regional: el norte registra tardes más frescas, mientras el Pacífico Sur y la Península de Yucatán conservan condiciones cálidas.</p>
+            <ul>
+              <li><strong>Noviembre de 2026.</strong> En el norte se proyectan valores de 13.9 a 21.9 °C; la vertiente del Pacífico, la Cuenca del Balsas y el Sureste presentan rangos elevados de 29.48 a 35.92 °C.</li>
+              <li><strong>Diciembre de 2026.</strong> Amplias zonas del norte no superan 18.82 °C; costas de Sinaloa, Nayarit, Jalisco, Michoacán, Guerrero, Oaxaca y Yucatán mantienen rangos de 28.21 a 36.08 °C.</li>
+              <li><strong>Enero de 2027.</strong> En zonas altas del norte y centro se proyectan máximas de 10.35 a 18.44 °C, frente a 27.66 a 36.12 °C en el sur y la costa del Pacífico.</li>
+            </ul>
+          }
+          <hr>
+          <h3>Análisis agroclimático integrado (lluvia + temperatura mínima + temperatura máxima)</h3>
+          <h4>Escenario A · Interior del país: norte, Altiplano y Bajío</h4>
+          <p><strong>Dinámica:</strong> lluvias mínimas o nulas (&lt;10 mm), mínimas de 2.0 a 7.7 °C con sectores bajo cero y tardes templadas. <strong>Diagnóstico:</strong> alta oscilación térmica y riesgo de heladas radiativas. <strong>Productores:</strong> proteger hortalizas y cereales tempranos, y gestionar riegos según demanda. <strong>Política pública:</strong> monitorear presas y coordinar alertas por heladas y frentes fríos.</p>
+          <h4>Escenario B · Golfo y sureste: Veracruz, Tabasco y Chiapas</h4>
+          <p><strong>Dinámica:</strong> acumulados de lluvia superiores a 80 mm en sectores durante enero, mínimas de 13.4 a 23.1 °C y máximas mayores a 28 °C. <strong>Diagnóstico:</strong> ambiente cálido y húmedo asociado con eventos de Norte. <strong>Productores:</strong> reforzar drenaje y vigilancia fitosanitaria en café, cítricos, cacao y ganadería. <strong>Política pública:</strong> considerar desazolve, mantenimiento hidráulico y mecanismos de aseguramiento agrícola.</p>
+          <h4>Escenario C · Noroeste: Sonora, Sinaloa y Baja California</h4>
+          <p><strong>Dinámica:</strong> lluvias invernales aisladas, mínimas bajas con posible helada en valles agrícolas y máximas favorables al desarrollo vegetal. <strong>Productores:</strong> valorar mallas y riegos de protección térmica conforme a condiciones locales. <strong>Política pública:</strong> asegurar continuidad de bombeo y riego tecnificado en distritos estratégicos.</p>
+          <p class="informacion-nota">Los rangos y escenarios reproducen la interpretación técnica proporcionada para noviembre 2026–enero 2027. Deben contrastarse con las actualizaciones del pronóstico, observaciones y alertas oficiales antes de tomar decisiones operativas.</p>
+        </div>
+      </section>
+    </div>
+  }
 </div>
