@@ -524,3 +524,67 @@ td {
 .informacion-contenido li { margin-bottom:10px; }
 .informacion-nota { margin-top:16px; padding:12px; background:#eef5f7; border-radius:6px; font-size:13px; }
 @media(max-width:768px) { .informacion-ventana { max-height:90vh; } .informacion-encabezado, .informacion-contenido { padding:16px; } }
+
+.titulo-pagina {
+  padding: 24px 20px 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.titulo-pagina h1 {
+  margin: 0;
+  color: #404040;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(24px, 2.5vw, 46px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.etiqueta-beta {
+  display: inline-block;
+  margin-left: 8px;
+  color: #777777;
+  font-size: 0.65em;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .titulo-pagina {
+    padding: 20px 16px;
+  }
+}
+
+.titulo-pagina {
+  padding: 22px 20px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.titulo-pagina h1 {
+  margin: 0;
+  color: #404040;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(20px, 2.1vw, 38px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.etiqueta-beta {
+  display: inline;
+  margin-left: 8px;
+  color: #777777;
+  font-size: 0.65em;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .titulo-pagina {
+    padding: 18px 12px;
+  }
+
+  .titulo-pagina h1 {
+    font-size: 22px;
+  }
+}
