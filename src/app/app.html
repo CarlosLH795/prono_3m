@@ -1,1 +1,11 @@
-<app-pronostico-map></app-pronostico-map>
+@if (auth.estaLogueado()) {
+  <div class="barra-institucional">
+    <img
+  src="logo-inifap.PNG"
+  alt="INIFAP"
+  class="logo-navbar"
+><
+    <button type="button" (click)="salir()">Cerrar sesión</button>
+  </div>
+}
+<router-outlet></router-outlet>

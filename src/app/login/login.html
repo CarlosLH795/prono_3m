@@ -1,0 +1,80 @@
+<div class="login-page">
+
+  <div class="login-card">
+
+    <h1>Pronóstico Estacional 3M</h1>
+
+    <p class="subtitle">
+      Acceso institucional a la perspectiva climática
+    </p>
+
+    @if (avisoSesion !== '') {
+      <div class="login-error">
+        <strong>Sesión finalizada</strong>
+        <p>{{ avisoSesion }}</p>
+      </div>
+    }
+
+    <label class="input-label">
+      Correo institucional
+    </label>
+
+    <input
+      type="text"
+      placeholder="nombre@inifap.gob.mx"
+      [(ngModel)]="usuario"
+    >
+
+    <label class="input-label">
+      Contraseña
+    </label>
+
+    <input
+      type="password"
+      placeholder="Ingrese su contraseña"
+      [(ngModel)]="password"
+      (keyup.enter)="entrar()"
+    >
+
+    <br>
+    <br>
+
+    <div id="turnstile-container"></div>
+
+    <button
+      type="button"
+      (click)="entrar()"
+    >
+      Entrar
+    </button>
+
+    @if (error !== '') {
+      <div class="login-error">
+        <strong>No se pudo iniciar sesión</strong>
+        <p>{{ error }}</p>
+      </div>
+    }
+
+
+   
+<div class="solicitud-acceso">
+  <p>¿Tienes problemas para ingresar o quieres solicitar acceso?</p>
+
+  <span>Envía tu solicitud desde tu correo institucional a:</span>
+
+  <a
+    class="correo-destacado"
+    href="mailto:lnmysr.soporte@inifap.gob.mx?subject=Solicitud%20de%20acceso%20-%20Pronostico%20Estacional%203M">
+    ✉ lnmysr.soporte@inifap.gob.mx
+  </a>
+
+  <small>
+    Revisaremos tu solicitud para registrar tu cuenta
+    y asignarte una contraseña.
+  </small>
+</div>
+
+
+  </div>
+
+</div>

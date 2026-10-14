@@ -1,5 +1,7 @@
 import {
   ApplicationConfig,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection
 } from '@angular/core';
@@ -11,7 +13,9 @@ import {
 import localeEsMx from '@angular/common/locales/es-MX';
 
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { AuthService } from './services/auth.services';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 import { routes } from './app.routes';
 
@@ -24,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       eventCoalescing: true
     }),
     provideRouter(routes),
-    provideHttpClient()
+    provideAppInitializer(() => { inject(AuthService).inicializarSesion(); }),
+    provideHttpClient(withInterceptors([authInterceptor]))
   ]
 };

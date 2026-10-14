@@ -1,0 +1,16 @@
+.barra-institucional {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 18px;background:#1d2939;color:#fff;font:600 14px Arial,sans-serif;flex-wrap:wrap}
+.barra-institucional button {border:0;border-radius:7px;padding:9px 14px;background:#b91c1c;color:white;cursor:pointer;font-weight:600}
+.logo-navbar {
+  display: block;
+  width: auto;
+  height: 48px;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+@media (max-width: 600px) {
+  .logo-navbar {
+    height: 38px;
+    max-width: 125px;
+  }
+}

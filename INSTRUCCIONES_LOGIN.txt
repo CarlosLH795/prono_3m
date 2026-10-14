@@ -1,0 +1,12 @@
+PRONÓSTICO ESTACIONAL 3M - VERSIÓN INSTITUCIONAL
+
+1. Esta carpeta es copia del ZIP prono-3m.zip, con cambios solo en app.ts/html/css, app.routes.ts, app.config.ts, index.html y nuevos archivos de login, guard, interceptor y auth service. No se modificaron pronostico-map ni pronostico-estacional.ts.
+2. Mantener respaldo del original y NO publicar estos archivos en la copia pública.
+3. Instalar dependencias con npm ci y probar con npm start.
+4. El login usa /wrf-api/api/auth/login y el Turnstile de TED. Verificar que el sitekey de TED autorice el dominio del Pronóstico 3M.
+5. El backend debe devolver resp.usuario.usuario (correo registrado). Si su estructura difiere, ajustar tras verificar la respuesta REAL, nunca asumir correo por el campo que escribió el usuario.
+6. Sustituir TU_CORREO_DE_SOPORTE@inifap.gob.mx en login.ts por dirección de soporte real.
+7. IMPORTANTE: Esta implementación protege navegación Angular, NO los endpoints de FastAPI. Los endpoints meteorológicos actuales son públicos y seguirán siendo accesibles desde la copia pública. Para información privada crear/verificar autorización del lado del backend.
+8. El guard requiere email institucional en el objeto de usuario devuelto por el backend, además de JWT no expirado. El servidor es la autoridad final.
+9. Publicar con el base-href del alias IIS ORIGINAL (no el público), por ejemplo ng build --configuration production --base-href /ALIAS-ORIGINAL/ .
+10. En IIS debe existir fallback de SPA para /login y demás rutas, usando el web.config del sitio.
