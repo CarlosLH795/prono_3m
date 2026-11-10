@@ -848,62 +848,96 @@
         <header class="informacion-encabezado">
           <div>
             <h2 id="titulo-informacion">Interpretación agroclimática</h2>
-            <p>{{ nombreVariable(variableSeleccionada) }} · Noviembre 2026 – enero 2027</p>
+            <p>Perspectiva climática nacional · Diciembre 2026 – febrero 2027</p>
           </div>
           <button type="button" class="informacion-cerrar"
             (click)="mostrarInformacion = false" aria-label="Cerrar información">×</button>
         </header>
+
         <div class="informacion-contenido">
-          <p class="informacion-nota"><strong>Periodo de referencia:</strong> noviembre de 2026 a enero de 2027. Este análisis no corresponde a octubre de 2026. Los escenarios son interpretaciones del pronóstico, no certezas de ocurrencia.</p>
-          @if (variableSeleccionada === 'lluvia') {
-            <h3>Perspectiva de precipitación</h3>
-            <p>El trimestre noviembre-diciembre-enero coincide con la transición hacia el invierno boreal. Desde una perspectiva técnico-climática, deben vigilarse tres factores:</p>
-            <ol>
-              <li><strong>Evolución del ENOS (El Niño-Oscilación del Sur).</strong> Dar seguimiento a sus actualizaciones y posibles efectos regionales.</li>
-              <li><strong>Sistemas frontales (frentes fríos).</strong> Las masas de aire polar pueden elevar el riesgo de heladas en cultivos de otoño-invierno; conviene prever contingencias y gestionar el almacenamiento de agua.</li>
-              <li><strong>Lluvias por “Nortes”.</strong> En el Golfo de México y la Península de Yucatán pueden presentarse lluvias relevantes, con efectos en cosechas y recarga de acuíferos.</li>
-            </ol>
-            <h3>Guía para productores agrícolas, forestales y pecuarios</h3>
-            <ul>
-              <li>En el norte y occidente, la escasez de lluvias invernales puede reducir la calidad del forraje; planificar suplementación del ganado y ajustar la carga animal.</li>
-              <li>En Veracruz, Tabasco y Chiapas, los excesos de humedad pueden favorecer enfermedades fúngicas y bacterianas; mantener drenajes eficientes.</li>
-              <li>En el Altiplano y norte, las condiciones secas y despejadas pueden favorecer heladas radiativas; considerar humedad controlada del suelo y coberturas térmicas.</li>
-              <li>En distritos de riego del norte, Bajío y centro, calendarizar riegos de auxilio conforme a la evapotranspiración del cultivo y consultar el Tablero Digital Edafoclimático.</li>
-              <li>En el centro y norte, la pérdida de humedad de suelos y vegetación puede anticipar condiciones propicias para incendios forestales.</li>
-              <li>Adoptar una gestión preventiva del riesgo climático en lugar de reaccionar solamente después de las afectaciones.</li>
-            </ul>
-            <h3>Estrategia para directivos del INIFAP</h3>
-            <ul>
-              <li>Evaluar escenarios de disponibilidad de agua y almacenamiento en presas de cuencas interiores; cualquier restricción de extracción requiere información hidrológica adicional y autoridad competente.</li>
-              <li>Prever protocolos y apoyos emergentes ante posibles heladas asociadas con frentes fríos y condiciones secas.</li>
-              <li>En Tabasco y Chiapas, valorar limpieza preventiva de cauces, desazolve y mantenimiento de infraestructura hidráulica frente a escenarios de lluvia intensa.</li>
-            </ul>
-          } @else if (variableSeleccionada === 'tmin') {
-            <h3>Análisis de temperatura mínima</h3>
-            <p>Las temperaturas mínimas reflejan la maduración estacional del invierno boreal, con enfriamiento en zonas altas e interiores debido a masas de aire polar y pérdida de radiación nocturna.</p>
-            <ul>
-              <li><strong>Noviembre de 2026 · Transición térmica.</strong> En la Sierra Madre Occidental (Chihuahua y Durango) se proyectan rangos de −3.92 a −0.32 °C; en la Mesa del Centro y el Altiplano, de 5.67 a 10.59 °C. El sur y las costas conservan condiciones cálidas.</li>
-              <li><strong>Diciembre de 2026 · Consolidación del aire frío.</strong> El rango de −6.80 a −3.39 °C se expande sobre Chihuahua, Durango, Sonora y Zacatecas. Valores de 2.47 a 7.76 °C predominan en el Bajío, Altiplano Central y partes altas de Puebla y Estado de México.</li>
-              <li><strong>Enero de 2027 · Pico del invierno.</strong> Los núcleos de −7.44 a −3.88 °C alcanzan mayor extensión en el norte y noroeste; el rango de 2.05 a 7.15 °C se consolida en el interior, con condiciones favorables para heladas.</li>
-            </ul>
-          } @else if (variableSeleccionada === 'tmax') {
-            <h3>Análisis de temperatura máxima</h3>
-            <p>Las temperaturas máximas muestran un contraste regional: el norte registra tardes más frescas, mientras el Pacífico Sur y la Península de Yucatán conservan condiciones cálidas.</p>
-            <ul>
-              <li><strong>Noviembre de 2026.</strong> En el norte se proyectan valores de 13.9 a 21.9 °C; la vertiente del Pacífico, la Cuenca del Balsas y el Sureste presentan rangos elevados de 29.48 a 35.92 °C.</li>
-              <li><strong>Diciembre de 2026.</strong> Amplias zonas del norte no superan 18.82 °C; costas de Sinaloa, Nayarit, Jalisco, Michoacán, Guerrero, Oaxaca y Yucatán mantienen rangos de 28.21 a 36.08 °C.</li>
-              <li><strong>Enero de 2027.</strong> En zonas altas del norte y centro se proyectan máximas de 10.35 a 18.44 °C, frente a 27.66 a 36.12 °C en el sur y la costa del Pacífico.</li>
-            </ul>
-          }
-          <hr>
-          <h3>Análisis agroclimático integrado (lluvia + temperatura mínima + temperatura máxima)</h3>
-          <h4>Escenario A · Interior del país: norte, Altiplano y Bajío</h4>
-          <p><strong>Dinámica:</strong> lluvias mínimas o nulas (&lt;10 mm), mínimas de 2.0 a 7.7 °C con sectores bajo cero y tardes templadas. <strong>Diagnóstico:</strong> alta oscilación térmica y riesgo de heladas radiativas. <strong>Productores:</strong> proteger hortalizas y cereales tempranos, y gestionar riegos según demanda. <strong>Política pública:</strong> monitorear presas y coordinar alertas por heladas y frentes fríos.</p>
-          <h4>Escenario B · Golfo y sureste: Veracruz, Tabasco y Chiapas</h4>
-          <p><strong>Dinámica:</strong> acumulados de lluvia superiores a 80 mm en sectores durante enero, mínimas de 13.4 a 23.1 °C y máximas mayores a 28 °C. <strong>Diagnóstico:</strong> ambiente cálido y húmedo asociado con eventos de Norte. <strong>Productores:</strong> reforzar drenaje y vigilancia fitosanitaria en café, cítricos, cacao y ganadería. <strong>Política pública:</strong> considerar desazolve, mantenimiento hidráulico y mecanismos de aseguramiento agrícola.</p>
-          <h4>Escenario C · Noroeste: Sonora, Sinaloa y Baja California</h4>
-          <p><strong>Dinámica:</strong> lluvias invernales aisladas, mínimas bajas con posible helada en valles agrícolas y máximas favorables al desarrollo vegetal. <strong>Productores:</strong> valorar mallas y riegos de protección térmica conforme a condiciones locales. <strong>Política pública:</strong> asegurar continuidad de bombeo y riego tecnificado en distritos estratégicos.</p>
-          <p class="informacion-nota">Los rangos y escenarios reproducen la interpretación técnica proporcionada para noviembre 2026–enero 2027. Deben contrastarse con las actualizaciones del pronóstico, observaciones y alertas oficiales antes de tomar decisiones operativas.</p>
+          <p class="informacion-nota">
+            <strong>Periodo de referencia:</strong> diciembre de 2026 a febrero de 2027.
+            Esta interpretación resume escenarios del pronóstico y no constituye una certeza de ocurrencia.
+          </p>
+
+          <h3>Algunos puntos a destacar, que esperamos sean de utilidad</h3>
+          <ol>
+            <li>
+              Se anticipa un invierno desafiante que requerirá una gestión estricta del agua
+              almacenada en los distritos de riego del norte y centro, programas de mitigación
+              de heladas, suplementación forrajera preventiva para la ganadería y un monitoreo
+              temprano de incendios forestales en las zonas serranas.
+            </li>
+            <li>
+              El trimestre invernal 2026-2027 estará caracterizado por un fuerte contraste
+              regional que polarizará los desafíos del sector primario en México.
+              <ol>
+                <li>
+                  <strong>Región Norte, Noroeste y Centro.</strong>
+                  Sequía estacional extrema + heladas severas continuas. Se espera que ocurra
+                  un efecto <strong>«Tijera» agrícola-pecuario.</strong> Los eventos de helada
+                  congelan el poco forraje disponible y amenazan cultivos de riego, mientras
+                  la falta de lluvia vacía paulatinamente los acuíferos y presas. Alto riesgo
+                  de siniestros forestales por material vegetal seco.
+                </li>
+                <li>
+                  <strong>Región Sur y Sureste.</strong>
+                  Exceso de lluvia inicial (diciembre) + altas temperaturas diurnas continuas.
+                  <strong>Riesgo fitosanitario y de inundación.</strong> La combinación de suelos
+                  saturados por agua en diciembre junto con calor constante (&gt;30 °C) en el
+                  trimestre favorece la proliferación de plagas, hongos y vectores de
+                  enfermedades tanto en cultivos tropicales (café, plátano y cítricos)
+                  como en el ganado.
+                </li>
+              </ol>
+            </li>
+          </ol>
+
+          <h3>Precipitación (lluvia acumulada)</h3>
+          <ul>
+            <li><strong>Diciembre 2026.</strong> Muestra una concentración severa de lluvias
+              acumuladas (superiores a 70-80 mm/mes) en el sureste del país, particularmente
+              en el sur de Veracruz, Tabasco, norte de Chiapas y áreas de la Península de
+              Yucatán. El norte, centro y occidente muestran un panorama predominantemente
+              seco con acumulados inferiores a los 20 mm/mes.</li>
+            <li><strong>Enero 2027.</strong> Se mantiene el patrón de sequedad extrema en la
+              mayor parte del territorio nacional (0-15 mm/mes). Las lluvias en el sureste
+              disminuyen ligeramente en intensidad en comparación con diciembre, pero siguen
+              siendo las más altas del país (60-80 mm/mes). Aparece un ligero incremento de
+              humedad en el extremo noroeste (Baja California).</li>
+            <li><strong>Febrero 2027.</strong> Es el mes más seco del trimestre para el centro
+              y norte del país. Destaca un incremento notable de precipitación en la zona
+              norte de Baja California y noroeste de Sonora, mientras que el sureste reduce
+              su acumulado máximo hacia rangos de 50-60 mm/mes.</li>
+          </ul>
+
+          <h3>Temperatura máxima (TMAX)</h3>
+          <ul>
+            <li><strong>General (trimestre).</strong> Se observa una marcada división climática
+              latitudinal y topográfica. Las regiones costeras del Pacífico sur, la cuenca del
+              Balsas, la Península de Yucatán y las llanuras costeras del sureste experimentarán
+              temperaturas máximas elevadas, constantemente en el rango de los 30.0 °C a
+              &gt;32.5 °C.</li>
+            <li><strong>Zonas altas.</strong> Las regiones montañosas (Sierra Madre Occidental
+              y Eje Neovolcánico) mantendrán máximas templadas a frías (15.0 °C - 20.0 °C),
+              aliviando el estrés por calor en esas altitudes.</li>
+          </ul>
+
+          <h3>Temperatura mínima (TMIN)</h3>
+          <ul>
+            <li><strong>General (trimestre).</strong> El invierno se consolidará con
+              temperaturas mínimas críticas (valores bajo cero, de -5.0 °C hasta -15.0 °C
+              o menos) en las zonas altas de la Sierra Madre Occidental (Chihuahua, Durango)
+              y zonas altas del norte/centro del país.</li>
+            <li><strong>Zonas tropicales.</strong> Las regiones del sur, sureste y las costas
+              mantendrán mínimas cálidas y seguras para cultivos tropicales, manteniéndose
+              por encima de los 15.0 °C a 20.0 °C.</li>
+          </ul>
+
+          <p class="informacion-nota">
+            Los escenarios descritos deben contrastarse con las actualizaciones del pronóstico,
+            las observaciones meteorológicas y las alertas oficiales antes de tomar decisiones operativas.
+          </p>
         </div>
       </section>
     </div>
